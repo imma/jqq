@@ -11,8 +11,15 @@ def aws_tags:
   aws_remap_o(aws_tags_);
 
 def aws_vpcs_:
-  reduce .[]? as $i ({}; .[$i.VpcId] = $i);
-#| map_values(if type == "object" then aws_remap_a(aws_vpcs_) elif type == "array" then aws_remap_a(aws_vpcs_) else . end);
+  if type == "array" then
+    if (.[0]? | type) == "object" then
+      reduce .[]? as $i ({}; .[$i.VpcId] = $i) | map_values(map_values(if type == "object" then aws_remap_a(aws_vpcs_) elif type == "array" then aws_remap_a(aws_vpcs_) else . end))
+    else
+      aws_remap_a(aws_vpcs_)
+    end
+  else
+    aws_remap_a(aws_vpcs_)
+  end;
 
 def aws_vpcs:
   aws_remap_a(aws_vpcs_);
