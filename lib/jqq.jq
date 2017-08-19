@@ -5,5 +5,11 @@ def aws_remap(f):
 def aws_tags_:
   .[]?.Tags |= reduce .[]? as $i ({}; .[$i.Key] = $i.Value);
 
+def aws_vpcs_:
+  reduce .[]? as $i ({}; .[$i.VpcId] = $i);
+
 def aws_tags:
   aws_remap(aws_tags_);
+
+def aws_vpcs:
+  aws_remap(aws_vpcs_);
