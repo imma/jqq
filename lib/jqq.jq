@@ -5,7 +5,7 @@ def aws_remap_o(f):
 def aws_tags_:
   if type == "object" then
     if (.Tags? | type) == "array" then
-      .Tags? |= reduce .[]? as $i ({}; .[$i.Key] = $i.Value) | map_values(if . != null and (type == "object" or type == "array") then aws_remap_o(aws_tags_) else . end)
+      .Tags? |= reduce .[]? as $i ({}; .[$i.Key] = $i.Value) | map_values(if type == "object" or type == "array" then aws_remap_o(aws_tags_) else . end)
     else
       aws_remap_o(aws_tags_)
     end
