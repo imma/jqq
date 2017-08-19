@@ -15,15 +15,16 @@ def aws_tags_:
     aws_remap_o(aws_tags_)
   end;
 
+
 def aws_attrs_(meh):
   if type == "array" and (.[0]? | type) == "object" then
     if .[0] | meh then
-      reduce .[]? as $i ({}; .[$i | meh] = $i) | map_values(map_values(if type == "object" or type == "array" then aws_remap_a(aws_attrs_(meh)) else . end))
+      reduce .[]? as $i ({}; .[$i | meh] = ($i | map_values(if type == "array" then aws_attrs_(meh) elif type == "object" then aws_remap_a(aws_attrs_(meh)) else . end)))
     else
-      aws_remap_a(aws_attrs_(meh))
+      map_values(if type == "array" then aws_attrs_(meh) elif type == "object" then aws_remap_a(aws_attrs_(meh)) else . end)
     end
   else
-    aws_remap_a(aws_attrs_(meh))
+    map_values(if type == "array" then aws_attrs_(meh) elif type == "object" then aws_remap_a(aws_attrs_(meh)) else . end)
   end;
 
 def aws_tags:
