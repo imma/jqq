@@ -10,7 +10,7 @@ def aws_remap_o(f):
 
 def aws_tags_:
   if (.Tags? | type) == "array" then
-    .Tags? |= reduce .[]? as $i ({}; .[$i.Key] = $i.Value)
+    .Tags |= reduce .[] as $i ({}; .[$i.Key] = $i.Value)
   else
     map_values(aws_remap_o(aws_tags_))
   end
@@ -36,7 +36,7 @@ def aws_remap_a(f):
 
 def aws_attrs_(by_id):
   if map(select(by_id)) | length > 0 then
-    reduce .[]? as $i ({}; .[$i | by_id] = ($i | map_values(aws_remap_a(aws_attrs_(by_id)))))
+    reduce .[] as $i ({}; .[$i | by_id] = ($i | map_values(aws_remap_a(aws_attrs_(by_id)))))
   else
     map_values(aws_remap_a(aws_attrs_(by_id)))
   end
