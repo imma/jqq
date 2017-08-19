@@ -34,14 +34,14 @@ def aws_remap_a(f):
   end
   ;
 
-def aws_attrs_(meh):
-  if map(select(meh)) | length > 0 then
-    reduce .[]? as $i ({}; .[$i | meh] = ($i | map_values(aws_remap_a(aws_attrs_(meh)))))
+def aws_attrs_(by_id):
+  if map(select(by_id)) | length > 0 then
+    reduce .[]? as $i ({}; .[$i | by_id] = ($i | map_values(aws_remap_a(aws_attrs_(by_id)))))
   else
-    map_values(aws_remap_a(aws_attrs_(meh)))
+    map_values(aws_remap_a(aws_attrs_(by_id)))
   end
   ;
 
-def aws_attrs(attr):
-  aws_remap_a(aws_attrs_(attr))
+def aws_attrs(by_id):
+  aws_remap_a(aws_attrs_(by_id))
   ;
