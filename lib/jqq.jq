@@ -7,15 +7,15 @@ def aws_remap_a(f):
 def aws_tags_:
   .Tags? |= reduce .[]? as $i ({}; .[$i.Key] = $i.Value) | map_values(if type == "object" or type == "array" then aws_remap_o(aws_tags_) else . end);
 
-def aws_vpcs_:
+def aws_attrs_(meh):
   if type == "array" and (.[0]? | type) == "object" then
-    reduce .[]? as $i ({}; .[$i.VpcId] = $i) | map_values(map_values(if type == "object" or type == "array" then aws_remap_a(aws_vpcs_) else . end))
+    reduce .[]? as $i ({}; .[$i | meh] = $i) | map_values(map_values(if type == "object" or type == "array" then aws_remap_a(aws_attrs_(meh)) else . end))
   else
-    aws_remap_a(aws_vpcs_)
+    aws_remap_a(aws_attrs_(meh))
   end;
 
 def aws_tags:
   aws_remap_o(aws_tags_);
 
-def aws_vpcs:
-  aws_remap_a(aws_vpcs_);
+def aws_attrs(attr):
+  aws_remap_a(aws_attrs_(attr));
