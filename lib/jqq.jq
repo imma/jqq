@@ -17,7 +17,11 @@ def aws_tags_:
 
 def aws_attrs_(meh):
   if type == "array" and (.[0]? | type) == "object" then
-    reduce .[]? as $i ({}; .[$i | meh] = $i) | map_values(map_values(if type == "object" or type == "array" then aws_remap_a(aws_attrs_(meh)) else . end))
+    if .[0] | meh then
+      reduce .[]? as $i ({}; .[$i | meh] = $i) | map_values(map_values(if type == "object" or type == "array" then aws_remap_a(aws_attrs_(meh)) else . end))
+    else
+      aws_remap_a(aws_attrs_(meh))
+    end
   else
     aws_remap_a(aws_attrs_(meh))
   end;
