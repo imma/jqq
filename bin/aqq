@@ -21,20 +21,31 @@ function main {
   source "${BLOCK_PATH:-"$shome/work"}/block/script/profile" ~
   source normalize  
 
-  local pth_cache="$(mktemp -d -t XXXXXX)"
-  trap "$(printf 'rm -rf %q' "$pth_cache")" EXIT
+  local pth_cache="/tmp/meh"
+  #local pth_cache="$(mktemp -d -t XXXXXX)"
+  #trap "$(printf 'rm -rf %q' "$pth_cache")" EXIT
 
-  (
-    cd "$pth_cache"
-    aq describe-instances > describe-instances &
-    aq describe-volumes > describe-volumes &
-    aq describe-snapshots --owner self > describe-snapshots &
-    aq describe-images --owner self > describe-images &
-    wait
-  )
+  if [[ ! -d "$pth_cache" ]]; then
+    (
+      mkdir -p "$pth_cache"
+      cd "$pth_cache"
+      aq describe-instances > describe-instances &
+      aq describe-volumes > describe-volumes &
+      aq describe-snapshots --owner self > describe-snapshots &
+      aq describe-images --owner self > describe-images &
+      wait
+    )
+  fi
+
   jq -n $(argfiles "$pth_cache") '
-      $instances | .Reservations[].Instances[].BlockDeviceMappings[].Ebs |= . + {Volume: $volumes.Volumes[.VolumeId]}
-    '
+  $instances.Reservations[].Instances[]
+    | . |= . + 
+					{Image: $images.Images[.ImageId]}
+    | .BlockDeviceMappings[].Ebs |= . + 
+					{Volume: $volumes.Volumes[.VolumeId]}
+		| .Image.BlockDeviceMappings["/dev/sda1"].Ebs |= . +
+					{Snapshot: $snapshots.Snapshots[.SnapshotId]}
+  ' \
+    | jq -r $(argfiles "$pth_cache") "$@"
 }
-
-source sub "$BASH_SOURCE" "$@"
+main "$@"
