@@ -1,18 +1,38 @@
 #!/usr/bin/env bash
 
+function by_id {
+  local a
+  local count=0
+  for a in "$@"; do
+    if [[ "$count" -gt 0 ]]; then
+      printf ' | '
+    fi
+    printf 'aws_attrs(.%s)' "$a"
+    count="$((count + 1))"
+  done
+}
+
+function id_table {
+  case "${1:-}-${2:-}" in
+    ec2-describe-instances)
+      echo ReservationId InstanceId GroupName PrivateIpAddress Ipv6Address DeviceName ;;
+    ec2-describe-regions)
+      echo RegionName ;;
+    *)
+      echo Whatever ;;
+  esac
+}
+
+function jqid {
+  jq "$(by_id $(id_table "$@"))"
+}
+
 function main {
   local shome="$(cd -P -- "${BASH_SOURCE%/*}/.." && pwd -P)"
   source "${BLOCK_PATH:-"$shome/work"}/block/script/profile" ~
   source normalize  
 
-  aws "$@" | jq 'aws_tags' \
-    | case "${1:-}-${2:-}" in
-        ec2-describe-instances)
-          jq 'aws_attrs(.GroupName) | aws_attrs(.InstanceId) | aws_attrs(.ReservationId) | aws_attrs(.PrivateIpAddress) | aws_attrs(.Ipv6Address) | aws_attrs(.DeviceName)' ;;
-        *)
-          jq . ;;
-      esac
-
+  aws "$@" | jq 'aws_tags' | jqid "$@"
 }
 
 source sub "$BASH_SOURCE" "$@"
