@@ -5,7 +5,14 @@ function main {
   source "${BLOCK_PATH:-"$shome/work"}/block/script/profile" ~
   source normalize  
 
-  aws "$@" | jq 'aws_tags'
+  aws "$@" | jq 'aws_tags' \
+    | case "${1:-}-${2:-}" in
+        ec2-describe-instances)
+          jq 'aws_attrs(.GroupName) | aws_attrs(.InstanceId) | aws_attrs(.ReservationId) | aws_attrs(.PrivateIpAddress) | aws_attrs(.Ipv6Address) | aws_attrs(.DeviceName)' ;;
+        *)
+          jq . ;;
+      esac
+
 }
 
 source sub "$BASH_SOURCE" "$@"
