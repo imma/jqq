@@ -67,6 +67,8 @@ function id_table {
       echo ec2 VpcEndpointId ;;
     describe-vpc-peering-connections)
       echo ec2 VpcPeeringConnectionId Ipv6CidrBlock ;;
+    describe-security-groups)
+      echo ec2 GroupId ;;
     *) 
       return 0 ;;
   esac

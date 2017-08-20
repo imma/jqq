@@ -21,6 +21,10 @@ function main {
   source "${BLOCK_PATH:-"$shome/work"}/block/script/profile" ~
   source normalize  
 
+  if [[ "$#" == 0 ]]; then
+    set -- .
+  fi
+
   local pth_cache="/tmp/meh"
   #local pth_cache="$(mktemp -d -t XXXXXX)"
   #trap "$(printf 'rm -rf %q' "$pth_cache")" EXIT
@@ -29,10 +33,14 @@ function main {
     (
       mkdir -p "$pth_cache"
       cd "$pth_cache"
-      aq describe-instances > describe-instances &
-      aq describe-volumes > describe-volumes &
       aq describe-snapshots --owner self > describe-snapshots &
       aq describe-images --owner self > describe-images &
+      aq describe-instances > describe-instances &
+      aq describe-volumes > describe-volumes &
+      aq describe-subnets > describe-subnets &
+      aq describe-vpcs > describe-vpcs &
+      aq describe-network-interfaces > describe-network-interfaces &
+      aq describe-security-groups > describe-security-groups &
       wait
     )
   fi
@@ -40,12 +48,31 @@ function main {
   jq -n $(argfiles "$pth_cache") '
   $instances.Reservations[].Instances[]
     | . |= . + 
-					{Image: $images.Images[.ImageId]}
+					{Image: $images.Images[.ImageId],
+           Subnet: $subnets.Subnets[.SubnetId],
+           Vpc: $vpcs.Vpcs[.VpcId]}
+    | .NetworkInterfaces[] |= . + 
+					{NetworkInterface: $network_interfaces.NetworkInterfaces[.NetworkInterfaceId],
+           Subnet: $subnets.Subnets[.SubnetId],
+           Vpc: $vpcs.Vpcs[.VpcId]}
     | .BlockDeviceMappings[].Ebs |= . + 
-					{Volume: $volumes.Volumes[.VolumeId]}
+					{Volume: $volumes.Volumes[.VolumeId],
+           Snapshot: $snapshots.Snashots[$volumes.Volumes[.VolumeId].SnapshotId]}
 		| .Image.BlockDeviceMappings["/dev/sda1"].Ebs |= . +
-					{Snapshot: $snapshots.Snapshots[.SnapshotId]}
+					{Snapshot: $snapshots.Snapshots[.SnapshotId],
+           Volume: $volumes.Volumes[$snapshots.Snapshots[.SnapshotId].VolumeId]}
+    | .NetworkInterfaces[].Groups[] |= . +
+          {Group: $security_groups.SecurityGroups[.GroupId]}
+    | .SecurityGroups[] |= . +
+          {Group: $security_groups.SecurityGroups[.GroupId]}
   ' \
     | jq -r $(argfiles "$pth_cache") "$@"
 }
+
 main "$@"
+exit $?
+
+  "IamInstanceProfile": {
+    "Arn": "arn:aws:iam::545070380609:instance-profile/adm-admin-build",
+    "Id": "AIPAJ6OBFJVJOMJ5QH67M"
+  },
