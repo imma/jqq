@@ -1,0 +1,8 @@
+#!/usr/bin/env bash
+
+function _jqq_profile {
+  local shome="${_jqq_home:="$(cd -P -- "${BASH_SOURCE%/*}/.." && pwd -P)"}"
+  PATH="$PATH:$shome/bin:$shome/exec"
+}
+
+_jqq_profile
