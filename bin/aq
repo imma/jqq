@@ -18,6 +18,14 @@ function id_table {
       echo ReservationId InstanceId GroupName PrivateIpAddress Ipv6Address DeviceName ;;
     ec2-describe-regions)
       echo RegionName ;;
+    ec2-describe-availability-zones)
+      echo ZoneName ;;
+    ec2-describe-volumes)
+      echo Device VolumeId ;;
+    ec2-describe-snapshots)
+      echo SnapshotId ;;
+    ec2-describe-vpcs)
+      echo VpcId AssociationId ;;
     *)
       echo Whatever ;;
   esac
@@ -32,7 +40,7 @@ function main {
   source "${BLOCK_PATH:-"$shome/work"}/block/script/profile" ~
   source normalize  
 
-  aws "$@" | jq 'aws_tags' | jqid "$@"
+  aws "$@" | jq 'aws_attrs(.ResourceId) | aws_tags' | jqid "$@"
 }
 
 source sub "$BASH_SOURCE" "$@"
