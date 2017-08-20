@@ -41,6 +41,14 @@ function id_table {
       echo ec2 DhcpOptionsId Key ;;
     describe-egress-only-internet-gateways)
       echo ec2 EgressOnlyInternetGatewayId VpcId ;;
+    describe-flow-logs)
+      echo ec2 FlowLogId ;;
+    describe-iam-instance-profile-associations)
+      echo ec2 AssociationId ;;
+    describe-id-format)
+      echo ec2 Resource ;;
+    describe-instance-status)
+      echo ec2 InstanceId Name ;;
     *) return 0 ;;
   esac
 }
