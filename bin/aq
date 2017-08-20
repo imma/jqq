@@ -3,6 +3,7 @@
 function by_id {
   local a
   local count=0
+  shift
   for a in "$@"; do
     if [[ "$count" -gt 0 ]]; then
       printf ' | '
@@ -13,21 +14,22 @@ function by_id {
 }
 
 function id_table {
-  case "${1:-}-${2:-}" in
-    ec2-describe-instances)
-      echo ReservationId InstanceId GroupName PrivateIpAddress Ipv6Address DeviceName ;;
-    ec2-describe-regions)
-      echo RegionName ;;
-    ec2-describe-availability-zones)
-      echo ZoneName ;;
-    ec2-describe-volumes)
-      echo Device VolumeId ;;
-    ec2-describe-snapshots)
-      echo SnapshotId ;;
-    ec2-describe-vpcs)
-      echo VpcId AssociationId ;;
+  case "${1:-}" in
+    describe-instances)
+      echo ec2 ReservationId InstanceId GroupName PrivateIpAddress Ipv6Address DeviceName ;;
+    describe-regions)
+      echo ec2 RegionName ;;
+    describe-availability-zones)
+      echo ec2 ZoneName ;;
+    describe-volumes)
+      echo ec2 Device VolumeId ;;
+    describe-snapshots)
+      echo ec2 SnapshotId ;;
+    describe-vpcs)
+      echo ec2 VpcId AssociationId ;;
     *)
-      echo Whatever ;;
+      exit 1
+      ;;
   esac
 }
 
@@ -35,12 +37,16 @@ function jqid {
   jq "$(by_id $(id_table "$@"))"
 }
 
+function guess_aws {
+  aws "$(id_table "$@" | awk '{print $1}')" "$@"
+}
+
 function main {
   local shome="$(cd -P -- "${BASH_SOURCE%/*}/.." && pwd -P)"
   source "${BLOCK_PATH:-"$shome/work"}/block/script/profile" ~
   source normalize  
 
-  aws "$@" | jq 'aws_attrs(.ResourceId) | aws_tags' | jqid "$@"
+  guess_aws "$@" | jq 'aws_attrs(.ResourceId) | aws_tags' | jqid "$@"
 }
 
 source sub "$BASH_SOURCE" "$@"
