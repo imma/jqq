@@ -31,6 +31,14 @@ function id_table {
       echo ec2 SubnetId AssociationId ;;
     describe-route-tables)
       echo ec2 RouteTableAssociationId RouteTableId ;;
+    describe-images)
+      echo ec2 DeviceName ImageId ;;
+    describe-account-attributes)
+      echo ec2 AttributeName ;;
+    describe-addresses)
+      echo ec2 AllocationId ;;
+    describe-dhcp-options)
+      echo ec2 DhcpOptionsId Key ;;
     *) return 0 ;;
   esac
 }

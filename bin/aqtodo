@@ -1,0 +1,7 @@
+#!/usr/bin/env bash
+
+function main {
+  aq "$@" | egrep -A 5 ': \[$'
+}
+
+main "$@"
