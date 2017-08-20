@@ -27,9 +27,11 @@ function id_table {
       echo ec2 SnapshotId ;;
     describe-vpcs)
       echo ec2 VpcId AssociationId ;;
-    *)
-      exit 1
-      ;;
+    describe-subnets)
+      echo ec2 SubnetId AssociationId ;;
+    describe-route-tables)
+      echo ec2 RouteTableAssociationId RouteTableId ;;
+    *) return 0 ;;
   esac
 }
 
@@ -38,7 +40,7 @@ function jqid {
 }
 
 function guess_aws {
-  aws "$(id_table "$@" | awk '{print $1}')" "$@"
+  aws $(id_table "$@" | awk '{print $1}') "$@"
 }
 
 function main {
