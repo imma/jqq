@@ -41,6 +41,7 @@ function main {
       aq describe-vpcs > describe-vpcs &
       aq describe-network-interfaces > describe-network-interfaces &
       aq describe-security-groups > describe-security-groups &
+      aq describe-dhcp-options > describe-dhcp-options &
       wait
     )
   fi
@@ -51,6 +52,8 @@ function main {
 					{Image: $images.Images[.ImageId],
            Subnet: $subnets.Subnets[.SubnetId],
            Vpc: $vpcs.Vpcs[.VpcId]}
+    | .Vpc |= . +
+          {DhcpOptions: $dhcp_options.DhcpOptions[.DhcpOptionsId]}
     | .NetworkInterfaces[] |= . + 
 					{NetworkInterface: $network_interfaces.NetworkInterfaces[.NetworkInterfaceId],
            Subnet: $subnets.Subnets[.SubnetId],
