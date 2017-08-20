@@ -39,6 +39,8 @@ function id_table {
       echo ec2 AllocationId ;;
     describe-dhcp-options)
       echo ec2 DhcpOptionsId Key ;;
+    describe-egress-only-internet-gateways)
+      echo ec2 EgressOnlyInternetGatewayId VpcId ;;
     *) return 0 ;;
   esac
 }

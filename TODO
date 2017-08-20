@@ -1,4 +1,3 @@
-describe-dhcp-options
 describe-egress-only-internet-gateways
 describe-flow-logs
 describe-host-reservation-offerings
