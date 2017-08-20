@@ -49,7 +49,26 @@ function id_table {
       echo ec2 Resource ;;
     describe-instance-status)
       echo ec2 InstanceId Name ;;
-    *) return 0 ;;
+    describe-internet-gateways)
+      echo ec2 InternetGatewayId VpcId ;;
+    describe-key-pairs)
+      echo ec2 KeyName ;;
+    describe-network-acls)
+      echo ec2 NetworkAclId NetworkAclAssociationId ;;
+    describe-network-interfaces)
+      echo ec2 NetworkInterfaceId GroupName PrivateIpAddress ;;
+    describe-prefix-lists)
+      echo ec2 PrefixListName ;;
+    describe-reserved-instances)
+      echo ec2 ReservedInstancesId Frequency ;;
+    describe-volume-status)
+      echo ec2 VolumeId Name ;;
+    describe-vpc-endpoints)
+      echo ec2 VpcEndpointId ;;
+    describe-vpc-peering-connections)
+      echo ec2 VpcPeeringConnectionId Ipv6CidrBlock ;;
+    *) 
+      return 0 ;;
   esac
 }
 
