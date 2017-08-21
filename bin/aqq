@@ -49,34 +49,30 @@ function main {
   jq -n $(argfiles "$pth_cache") '
     def denormalize:
       . +
-            {Image: $images.Images[.ImageId],
-            Subnet: $subnets.Subnets[.SubnetId],
-            Vpc: $vpcs.Vpcs[.VpcId]}
+          {Image: $images.Images[.ImageId],
+           Subnet: $subnets.Subnets[.SubnetId],
+           Vpc: $vpcs.Vpcs[.VpcId]}
       | .Vpc |= . +
-            {DhcpOptions: $dhcp_options.DhcpOptions[.DhcpOptionsId]}
+          {DhcpOptions: $dhcp_options.DhcpOptions[.DhcpOptionsId]}
       | .NetworkInterfaces[] |= . +
-            {NetworkInterface: $network_interfaces.NetworkInterfaces[.NetworkInterfaceId],
-            Subnet: $subnets.Subnets[.SubnetId],
-            Vpc: $vpcs.Vpcs[.VpcId]}
+          {NetworkInterface: $network_interfaces.NetworkInterfaces[.NetworkInterfaceId],
+           Subnet: $subnets.Subnets[.SubnetId],
+           Vpc: $vpcs.Vpcs[.VpcId]}
       | .BlockDeviceMappings[].Ebs |= . +
-            {Volume: $volumes.Volumes[.VolumeId],
-            Snapshot: $snapshots.Snashots[$volumes.Volumes[.VolumeId].SnapshotId]}
-      | .Image.BlockDeviceMappings["/dev/sda1"].Ebs |= . +
-            {Snapshot: $snapshots.Snapshots[.SnapshotId],
-            Volume: $volumes.Volumes[$snapshots.Snapshots[.SnapshotId].VolumeId]}
+          {Volume: $volumes.Volumes[.VolumeId],
+           Snapshot: $snapshots.Snashots[$volumes.Volumes[.VolumeId].SnapshotId]}
+      | .Image.BlockDeviceMappings[.RootDeviceName].Ebs |= . +
+          {Snapshot: $snapshots.Snapshots[.SnapshotId],
+           Volume: $volumes.Volumes[$snapshots.Snapshots[.SnapshotId].VolumeId]}
       | .NetworkInterfaces[].Groups[] |= . +
-            {Group: $security_groups.SecurityGroups[.GroupId]}
+          {Group: $security_groups.SecurityGroups[.GroupId]}
       | .SecurityGroups[] |= . +
-            {Group: $security_groups.SecurityGroups[.GroupId]}
+          {Group: $security_groups.SecurityGroups[.GroupId]}
       ;
 
-    reduce ($instances.Reservations[].Instances[] | select(.State.Name == "running")) as $i ({}; .[$i.InstanceId] = ($i | . |= denormalize))' | jq -r $(argfiles "$pth_cache") "$@"
+    reduce ($instances.Reservations[].Instances[] | select(.State.Name == "running")) as $i ({}; .[$i.InstanceId] = ($i | . |= denormalize))' \
+  | jq -r $(argfiles "$pth_cache") "$@"
 }
 
 main "$@"
 exit $?
-
-  "IamInstanceProfile": {
-    "Arn": "arn:aws:iam::545070380609:instance-profile/adm-admin-build",
-    "Id": "AIPAJ6OBFJVJOMJ5QH67M"
-  },
