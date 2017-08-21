@@ -5,41 +5,43 @@ function main {
   source "$shome/script/profile"
   source normalize  
 
-	mkdir -p "${AQQ_CACHE}"
-	cd "${AQQ_CACHE}"
-	{
-		echo describe-snapshots describe-snapshots --owner self
-		echo describe-images describe-images --owner self
-		echo describe-instances describe-instances
-		echo describe-volumes describe-volumes
-		echo describe-subnets describe-subnets
-		echo describe-vpcs describe-vpcs
-		echo describe-network-interfaces describe-network-interfaces
-		echo describe-security-groups describe-security-groups
-		echo describe-dhcp-options describe-dhcp-options
-		echo describe-iam-account-aliases list-account-aliases
-		echo describe-iam-groups list-groups
-		echo describe-iam-instance-profiles list-instance-profiles
-		echo describe-iam-policies list-policies
-		echo describe-iam-roles list-roles
-		echo describe-iam-users list-users
-		echo describe-iam-list-virtual-mfa-devices list-virtual-mfa-devices
-		echo describe-as-account-limits describe-account-limits
+  mkdir -p "${AQQ_CACHE}"
+  cd "${AQQ_CACHE}"
+  {
+    echo describe-snapshots describe-snapshots --owner self
+    echo describe-images describe-images --owner self
+    echo describe-instances describe-instances
+    echo describe-volumes describe-volumes
+    echo describe-subnets describe-subnets
+    echo describe-vpcs describe-vpcs
+    echo describe-network-interfaces describe-network-interfaces
+    echo describe-security-groups describe-security-groups
+    echo describe-dhcp-options describe-dhcp-options
+    echo describe-instance-status describe-instance-status
+    echo describe-volume-status describe-volume-status
+    echo describe-iam-account-aliases list-account-aliases
+    echo describe-iam-groups list-groups
+    echo describe-iam-instance-profiles list-instance-profiles
+    echo describe-iam-policies list-policies
+    echo describe-iam-roles list-roles
+    echo describe-iam-users list-users
+    echo describe-iam-list-virtual-mfa-devices list-virtual-mfa-devices
+    echo describe-as-account-limits describe-account-limits
     echo describe-as-adjustment-types describe-adjustment-types
     echo describe-as-groups describe-auto-scaling-groups
     echo describe-as-instances describe-auto-scaling-instances
     echo describe-as-notification-types describe-auto-scaling-notification-types
     echo describe-as-launch-configurations describe-launch-configurations
-		echo describe-as-lifecycle-hook-types  describe-lifecycle-hook-types
-		echo describe-as-metric-collection-types  describe-metric-collection-types
-		echo describe-as-notification-configurations  describe-notification-configurations
-		echo describe-as-activities  describe-scaling-activities
-		echo describe-as-process-types  describe-scaling-process-types
-		echo describe-as-tags describe-tags
-		echo describe-as-policy-types describe-termination-policy-types
-	} | while read -r f l; do
-				echo "$f $(echo "$l" | base64 -w 0)"
-			done | runmany 4 2 'set -x; aq $(echo "$2" | base64 -d) > "${AQQ_CACHE}/$1"'
+    echo describe-as-lifecycle-hook-types  describe-lifecycle-hook-types
+    echo describe-as-metric-collection-types  describe-metric-collection-types
+    echo describe-as-notification-configurations  describe-notification-configurations
+    echo describe-as-activities  describe-scaling-activities
+    echo describe-as-process-types  describe-scaling-process-types
+    echo describe-as-tags describe-tags
+    echo describe-as-policy-types describe-termination-policy-types
+  } | while read -r f l; do
+        echo "$f $(echo "$l" | base64 -w 0)"
+      done | runmany 4 2 'set -x; aq $(echo "$2" | base64 -d) > "${AQQ_CACHE}/$1"'
 }
 
 source sub "$BASH_SOURCE" "$@"
