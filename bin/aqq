@@ -36,16 +36,13 @@ function main {
            Subnet: $subnets.Subnets[.SubnetId],
            Vpc: $vpcs.Vpcs[.VpcId]}
       | .BlockDeviceMappings[].Ebs |= . +
-          {Volume: $volumes.Volumes[.VolumeId],
-           Snapshot: $snapshots.Snashots[$volumes.Volumes[.VolumeId].SnapshotId]}
-      | .Image.BlockDeviceMappings[.RootDeviceName].Ebs |= . +
-          {Snapshot: $snapshots.Snapshots[.SnapshotId],
-           Volume: $volumes.Volumes[$snapshots.Snapshots[.SnapshotId].VolumeId]}
+          {Volume: $volumes.Volumes[.VolumeId]} +
+          if $volumes.Volumes[.VolumeId].SnapshotId then {Snapshot: $snapshots.Snashots[$volumes.Volumes[.VolumeId].SnapshotId]} else {} end
       | .NetworkInterfaces[].Groups[] |= . +
           {Group: $security_groups.SecurityGroups[.GroupId]}
       | .SecurityGroups[] |= . +
           {Group: $security_groups.SecurityGroups[.GroupId]}
-      | .IamInstanceProfile |= $iam_instance_profiles.InstanceProfiles[.Arn]
+      | if .Arn then .IamInstanceProfile |= $iam_instance_profiles.InstanceProfiles[.Arn] else . end
       ;
 
     reduce ($instances.Reservations[].Instances[] | select(.State.Name == "running")) as $i ({}; .[$i.InstanceId] = ($i | . |= denormalize))' \
