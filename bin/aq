@@ -83,6 +83,32 @@ function id_table {
       echo iam UserName ;;
     list-virtual-mfa-devices)
       echo iam SerialNumber ;;
+    describe-account-limits)
+      echo autoscaling ;;
+    describe-adjustment-types)
+      echo autoscaling AdjustmentType ;;
+    describe-auto-scaling-groups)
+      echo autoscaling AutoScalingGroupARN InstanceId ;;
+    describe-auto-scaling-instances)
+      echo autoscaling InstanceId ;;
+    describe-auto-scaling-notification-types)
+      echo autoscaling ;;
+    describe-launch-configurations)
+      echo autoscaling LaunchConfigurationARN DeviceName ;;
+    describe-lifecycle-hook-types)
+      echo autoscaling ;;
+    describe-metric-collection-types)
+      echo autoscaling Metric Granularity ;;
+    describe-notification-configurations)
+      echo autoscaling ;;
+    describe-scaling-activities)
+      echo autoscaling ActivityId ;;
+    describe-scaling-process-types)
+      echo autoscaling ProcessName ;;
+    describe-tags)
+      echo autoscaling ;;
+    describe-termination-policy-types)
+      echo autoscaling ;;
     *) 
       return 0 ;;
   esac
