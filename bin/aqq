@@ -45,6 +45,7 @@ function main {
           {Group: $security_groups.SecurityGroups[.GroupId]}
       | .SecurityGroups[] |= . +
           {Group: $security_groups.SecurityGroups[.GroupId]}
+      | .IamInstanceProfile |= $iam_instance_profiles.InstanceProfiles[.Arn]
       ;
 
     reduce ($instances.Reservations[].Instances[] | select(.State.Name == "running")) as $i ({}; .[$i.InstanceId] = ($i | . |= denormalize))' \

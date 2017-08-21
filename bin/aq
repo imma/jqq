@@ -74,7 +74,7 @@ function id_table {
     list-groups)
       echo iam GroupName ;;
     list-instance-profiles)
-      echo iam InstanceProfileName RoleName ;;
+      echo iam Arn RoleName ;;
     list-policies)
       echo iam PolicyName ;;
     list-roles)
