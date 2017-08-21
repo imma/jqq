@@ -1,17 +1,15 @@
 #!/usr/bin/env bash
 
 function argfiles {
-  local pth_cache="$1"; shift
-
   (
-    cd "$pth_cache"
+    cd "${AQQ_CACHE}"
     set +f
     local a
     for a in *; do
       if [[ ! -f "$a" ]]; then
         continue
       fi
-      printf ' --argfile %q %q' "$(echo "${a#describe-}" | tr - _)" "$pth_cache/$a"
+      printf ' --argfile %q %q' "$(echo "${a#describe-}" | tr - _)" "${AQQ_CACHE}/$a"
     done
   )
 }
@@ -25,28 +23,7 @@ function main {
     set -- .
   fi
 
-  local pth_cache="/tmp/meh"
-  #local pth_cache="$(mktemp -d -t XXXXXX)"
-  #trap "$(printf 'rm -rf %q' "$pth_cache")" EXIT
-
-  if [[ ! -d "$pth_cache" ]]; then
-    (
-      mkdir -p "$pth_cache"
-      cd "$pth_cache"
-      aq describe-snapshots --owner self > describe-snapshots &
-      aq describe-images --owner self > describe-images &
-      aq describe-instances > describe-instances &
-      aq describe-volumes > describe-volumes &
-      aq describe-subnets > describe-subnets &
-      aq describe-vpcs > describe-vpcs &
-      aq describe-network-interfaces > describe-network-interfaces &
-      aq describe-security-groups > describe-security-groups &
-      aq describe-dhcp-options > describe-dhcp-options &
-      wait
-    )
-  fi
-
-  jq -n $(argfiles "$pth_cache") '
+  jq -n $(argfiles) '
     def denormalize:
       . +
           {Image: $images.Images[.ImageId],
@@ -71,8 +48,7 @@ function main {
       ;
 
     reduce ($instances.Reservations[].Instances[] | select(.State.Name == "running")) as $i ({}; .[$i.InstanceId] = ($i | . |= denormalize))' \
-  | jq -r $(argfiles "$pth_cache") "$@"
+  | jq -r $(argfiles) "$@"
 }
 
-main "$@"
-exit $?
+source sub "$BASH_SOURCE" "$@"

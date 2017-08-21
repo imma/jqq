@@ -69,6 +69,20 @@ function id_table {
       echo ec2 VpcPeeringConnectionId Ipv6CidrBlock ;;
     describe-security-groups)
       echo ec2 GroupId ;;
+    list-account-aliases)
+      echo iam ;;
+    list-groups)
+      echo iam GroupName ;;
+    list-instance-profiles)
+      echo iam InstanceProfileName RoleName ;;
+    list-policies)
+      echo iam PolicyName ;;
+    list-roles)
+      echo iam RoleName ;;
+    list-users)
+      echo iam UserName ;;
+    list-virtual-mfa-devices)
+      echo iam SerialNumber ;;
     *) 
       return 0 ;;
   esac
