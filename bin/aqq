@@ -47,29 +47,30 @@ function main {
   fi
 
   jq -n $(argfiles "$pth_cache") '
-  [$instances.Reservations[].Instances[]][1] |
-    . |= . + 
-          {Image: $images.Images[.ImageId],
-          Subnet: $subnets.Subnets[.SubnetId],
-          Vpc: $vpcs.Vpcs[.VpcId]}
-    | .Vpc |= . +
-          {DhcpOptions: $dhcp_options.DhcpOptions[.DhcpOptionsId]}
-    | .NetworkInterfaces[] |= . + 
-          {NetworkInterface: $network_interfaces.NetworkInterfaces[.NetworkInterfaceId],
-          Subnet: $subnets.Subnets[.SubnetId],
-          Vpc: $vpcs.Vpcs[.VpcId]}
-    | .BlockDeviceMappings[].Ebs |= . + 
-          {Volume: $volumes.Volumes[.VolumeId],
-          Snapshot: $snapshots.Snashots[$volumes.Volumes[.VolumeId].SnapshotId]}
-    | .Image.BlockDeviceMappings["/dev/sda1"].Ebs |= . +
-          {Snapshot: $snapshots.Snapshots[.SnapshotId],
-          Volume: $volumes.Volumes[$snapshots.Snapshots[.SnapshotId].VolumeId]}
-    | .NetworkInterfaces[].Groups[] |= . +
-          {Group: $security_groups.SecurityGroups[.GroupId]}
-    | .SecurityGroups[] |= . +
-          {Group: $security_groups.SecurityGroups[.GroupId]}
-  ' \
-    | jq -r $(argfiles "$pth_cache") "$@"
+    def denormalize:
+      . +
+            {Image: $images.Images[.ImageId],
+            Subnet: $subnets.Subnets[.SubnetId],
+            Vpc: $vpcs.Vpcs[.VpcId]}
+      | .Vpc |= . +
+            {DhcpOptions: $dhcp_options.DhcpOptions[.DhcpOptionsId]}
+      | .NetworkInterfaces[] |= . +
+            {NetworkInterface: $network_interfaces.NetworkInterfaces[.NetworkInterfaceId],
+            Subnet: $subnets.Subnets[.SubnetId],
+            Vpc: $vpcs.Vpcs[.VpcId]}
+      | .BlockDeviceMappings[].Ebs |= . +
+            {Volume: $volumes.Volumes[.VolumeId],
+            Snapshot: $snapshots.Snashots[$volumes.Volumes[.VolumeId].SnapshotId]}
+      | .Image.BlockDeviceMappings["/dev/sda1"].Ebs |= . +
+            {Snapshot: $snapshots.Snapshots[.SnapshotId],
+            Volume: $volumes.Volumes[$snapshots.Snapshots[.SnapshotId].VolumeId]}
+      | .NetworkInterfaces[].Groups[] |= . +
+            {Group: $security_groups.SecurityGroups[.GroupId]}
+      | .SecurityGroups[] |= . +
+            {Group: $security_groups.SecurityGroups[.GroupId]}
+      ;
+
+    reduce ($instances.Reservations[].Instances[] | select(.State.Name == "running")) as $i ({}; .[$i.InstanceId] = ($i | . |= denormalize))' | jq -r $(argfiles "$pth_cache") "$@"
 }
 
 main "$@"
