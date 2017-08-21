@@ -49,7 +49,7 @@ function main {
       ;
 
     reduce ($instances.Reservations[].Instances[] | select(.State.Name == "running")) as $i ({}; .[$i.InstanceId] = ($i | . |= denormalize))' \
-  | jq -r $(argfiles) "$@"
+  | jq -S -r $(argfiles) "$@"
 }
 
 source sub "$BASH_SOURCE" "$@"
