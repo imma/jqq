@@ -47,23 +47,23 @@ function main {
   fi
 
   jq -n $(argfiles "$pth_cache") '
-  $instances.Reservations[].Instances[]
-    | . |= . + 
-					{Image: $images.Images[.ImageId],
-           Subnet: $subnets.Subnets[.SubnetId],
-           Vpc: $vpcs.Vpcs[.VpcId]}
+  [$instances.Reservations[].Instances[]][1] |
+    . |= . + 
+          {Image: $images.Images[.ImageId],
+          Subnet: $subnets.Subnets[.SubnetId],
+          Vpc: $vpcs.Vpcs[.VpcId]}
     | .Vpc |= . +
           {DhcpOptions: $dhcp_options.DhcpOptions[.DhcpOptionsId]}
     | .NetworkInterfaces[] |= . + 
-					{NetworkInterface: $network_interfaces.NetworkInterfaces[.NetworkInterfaceId],
-           Subnet: $subnets.Subnets[.SubnetId],
-           Vpc: $vpcs.Vpcs[.VpcId]}
+          {NetworkInterface: $network_interfaces.NetworkInterfaces[.NetworkInterfaceId],
+          Subnet: $subnets.Subnets[.SubnetId],
+          Vpc: $vpcs.Vpcs[.VpcId]}
     | .BlockDeviceMappings[].Ebs |= . + 
-					{Volume: $volumes.Volumes[.VolumeId],
-           Snapshot: $snapshots.Snashots[$volumes.Volumes[.VolumeId].SnapshotId]}
-		| .Image.BlockDeviceMappings["/dev/sda1"].Ebs |= . +
-					{Snapshot: $snapshots.Snapshots[.SnapshotId],
-           Volume: $volumes.Volumes[$snapshots.Snapshots[.SnapshotId].VolumeId]}
+          {Volume: $volumes.Volumes[.VolumeId],
+          Snapshot: $snapshots.Snashots[$volumes.Volumes[.VolumeId].SnapshotId]}
+    | .Image.BlockDeviceMappings["/dev/sda1"].Ebs |= . +
+          {Snapshot: $snapshots.Snapshots[.SnapshotId],
+          Volume: $volumes.Volumes[$snapshots.Snapshots[.SnapshotId].VolumeId]}
     | .NetworkInterfaces[].Groups[] |= . +
           {Group: $security_groups.SecurityGroups[.GroupId]}
     | .SecurityGroups[] |= . +
