@@ -5,7 +5,7 @@ function main {
   source "$shome/script/profile"
   source normalize  
 
-  aqq 'map("\(.InstanceId) \(.BlockDeviceMappings[.RootDeviceName].Ebs.Volume.Encrypted)")' | jq -r "$@"
+  aqq '. as $idx | map("\(.InstanceId) \(.BlockDeviceMappings[.RootDeviceName].Ebs.Volume.Encrypted) \($idx[.InstanceId].Tags.Name)")' | jq -r "$@"
 }
 
 source sub "$BASH_SOURCE" "$@"
