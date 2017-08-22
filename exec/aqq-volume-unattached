@@ -1,0 +1,15 @@
+#!/usr/bin/env bash
+
+function main {
+  local shome="$(cd -P -- "${BASH_SOURCE%/*}/.." && pwd -P)"
+  source "$shome/script/profile"
+  source normalize  
+
+  aqq '
+    $volumes.Volumes 
+      | map(select(.Attachments | length == 0)) 
+      | map("\(.VolumeId) \(.Tags.Name//"")")' \
+      | jq -r "$@"
+}
+
+source sub "$BASH_SOURCE" "$@"
