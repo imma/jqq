@@ -12,7 +12,11 @@ def aws_tags_:
   if (.Tags? | type) == "array" then
     .Tags |= reduce .[] as $i ({}; .[$i.Key] = $i.Value)
   else
-    map_values(aws_remap_o(aws_tags_))
+    if (.TagSet? | type) == "array" then
+      .TagSet|= reduce .[] as $i ({}; .[$i.Key] = $i.Value)
+    else
+      map_values(aws_remap_o(aws_tags_))
+    end
   end
   ;
 
