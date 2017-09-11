@@ -5,8 +5,8 @@ function main {
   source "$shome/script/profile"
   source normalize  
 
-  mkdir -p "${AQQ_CACHE}/${AWS_REGION}"
-  cd "${AQQ_CACHE}/${AWS_REGION}"
+  mkdir -p "${AQQ_CACHE}/${CONTEXT_ORG}/${AWS_REGION}"
+  cd "${AQQ_CACHE}/${CONTEXT_ORG}/${AWS_REGION}"
   {
     echo describe-snapshots describe-snapshots --owner self
     echo describe-images describe-images --owner self
@@ -41,7 +41,7 @@ function main {
     echo describe-as-policy-types describe-termination-policy-types
   } | while read -r f l; do
         echo "$f $(echo "$l" | base64 -w 0)"
-      done | runmany 4 2 'set -x; aq $(echo "$2" | base64 -d) > "${AQQ_CACHE}/${AWS_REGION}/$1"'
+      done | runmany 4 2 'set -x; aq $(echo "$2" | base64 -d) > "${AQQ_CACHE}/${CONTEXT_ORG}/${AWS_REGION}/$1"'
 }
 
 source sub "$BASH_SOURCE" "$@"

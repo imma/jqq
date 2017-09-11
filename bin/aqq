@@ -2,15 +2,15 @@
 
 function argfiles {
   (
-    mkdir -p "${AQQ_CACHE}/${AWS_REGION}"
-    cd "${AQQ_CACHE}/${AWS_REGION}"
+    mkdir -p "${AQQ_CACHE}/${CONTEXT_ORG}/${AWS_REGION}"
+    cd "${AQQ_CACHE}/${CONTEXT_ORG}/${AWS_REGION}"
     set +f
     local a
     for a in *; do
       if [[ ! -f "$a" ]]; then
         continue
       fi
-      printf ' --argfile %q %q' "$(echo "${a#describe-}" | tr - _)" "${AQQ_CACHE}/${AWS_REGION}/$a"
+      printf ' --argfile %q %q' "$(echo "${a#describe-}" | tr - _)" "${AQQ_CACHE}/${CONTEXT_ORG}/${AWS_REGION}/$a"
     done
   )
 }
