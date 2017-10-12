@@ -22,7 +22,9 @@ function id_table {
     describe-availability-zones)
       echo ec2 ZoneName ;;
     describe-volumes)
-      echo ec2 Device VolumeId ;;
+      echo ec2 Device VolumeId
+      echo '.Volumes'
+      ;;
     describe-snapshots)
       echo ec2 SnapshotId ;;
     describe-vpcs)
@@ -112,14 +114,16 @@ function id_table {
     *) 
       return 0 ;;
   esac
+
+  echo '.'
 }
 
 function jqid {
-  jq "$(by_id $(id_table "$@"))"
+  jq "$(by_id $(id_table "$@" | head -1))" | jq "$(id_table "$@" | tail -n +2 | head -1)"
 }
 
 function guess_aws {
-  aws $(id_table "$@" | awk '{print $1}') "$@"
+  aws $(id_table "$@" | head -1 | awk '{print $1}') "$@"
 }
 
 function main {

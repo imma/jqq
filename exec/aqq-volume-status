@@ -8,7 +8,7 @@ function main {
   aqq '
     . as $idx 
       | $volume_status.VolumeStatuses 
-      | map("\(.VolumeId) \(.VolumeStatus.Status) \($volumes.Volumes[.VolumeId].Attachments[] | "\(.InstanceId) \(.Device) \($idx[.InstanceId].Tags.Name)")")' \
+      | map("\(.VolumeId) \(.VolumeStatus.Status) \($volumes[.VolumeId].Attachments[] | "\(.InstanceId) \(.Device) \($idx[.InstanceId].Tags.Name)")")' \
       | jq -r "$@"
 }
 

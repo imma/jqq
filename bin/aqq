@@ -37,8 +37,8 @@ function main {
            Subnet: $subnets.Subnets[.SubnetId],
            Vpc: $vpcs.Vpcs[.VpcId]}
       | .BlockDeviceMappings[].Ebs |= . +
-          {Volume: $volumes.Volumes[.VolumeId]} +
-          if $volumes.Volumes[.VolumeId].SnapshotId then {Snapshot: $snapshots.Snashots[$volumes.Volumes[.VolumeId].SnapshotId]} else {} end
+          {Volume: $volumes[.VolumeId]} +
+          if $volumes[.VolumeId].SnapshotId then {Snapshot: $snapshots.Snashots[$volumes[.VolumeId].SnapshotId]} else {} end
       | .NetworkInterfaces[].Groups[] |= . +
           {Group: $security_groups.SecurityGroups[.GroupId]}
       | .SecurityGroups[] |= . +

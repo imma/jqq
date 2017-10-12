@@ -6,7 +6,7 @@ function main {
   source normalize  
 
   aqq '
-    $volumes.Volumes 
+    $volumes
       | map(select(.Attachments | length == 0)) 
       | map("\(.VolumeId) \(.Tags.Name//"")")' \
       | jq -r "$@"
