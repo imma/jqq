@@ -50,4 +50,4 @@ function main {
   | jq -S -r $(argfiles) "$@"
 }
 
-source sub "$BASH_SOURCE" "$@"
+source sub-start-chain "$BASH_SOURCE" aws-mw-region "$@"
