@@ -3,8 +3,6 @@
 function _jqq_profile {
   local shome="${_jqq_home:="$(cd -P -- "${BASH_SOURCE%/*}/.." && pwd -P)"}"
   PATH="$PATH:$shome/bin:$shome/exec"
-
-  export AQQ_CACHE="${BOARD_PATH}/.aqq"
 }
 
 _jqq_profile
