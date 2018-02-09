@@ -40,8 +40,8 @@ function main {
     echo describe-as-tags describe-tags
     echo describe-as-policy-types describe-termination-policy-types
   } | grep "${1:-^}" | while read -r f l; do
-        echo "$f $(echo "$l" | base64 -w 0)"
-      done | runmany 4 2 'cmd="$(echo "$2" | base64 -d)"; set -x; aq $cmd  > "${AQQ_CACHE}/${CONTEXT_ORG}/${AWS_REGION}/$1"'
+        echo "$f $(echo "$l" | gbase64 -w 0)"
+      done | runmany 4 2 'cmd="$(echo "$2" | gbase64 -d)"; set -x; aq $cmd  > "${AQQ_CACHE}/${CONTEXT_ORG}/${AWS_REGION}/$1"'
 }
 
 source sub "$BASH_SOURCE" "$@"
